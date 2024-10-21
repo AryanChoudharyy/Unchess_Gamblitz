@@ -141,8 +141,8 @@ export function isValidMove(board: Board, player: Player, from: Position, to: Po
   return validMoves.some(move => move[0] === to[0] && move[1] === to[1])
 }
 
-export function getCaptureMoves(board: Board, player: Player): Position[][] {
-  const captureMoves: Position[][] = []
+export function getCaptureMoves(board: Board, player: Player): [Position, Position][] {
+  const captureMoves: [Position, Position][] = []
 
   for (let row = 0; row < BOARD_SIZE; row++) {
     for (let col = 0; col < BOARD_SIZE; col++) {
@@ -150,9 +150,7 @@ export function getCaptureMoves(board: Board, player: Player): Position[][] {
       if (piece && piece.player === player) {
         const moves = getPieceMoves(board, [row, col])
         const captures = moves.filter(([toRow, toCol]) => board[toRow][toCol] && board[toRow][toCol]!.player !== player)
-        if (captures.length > 0) {
-          captureMoves.push(...captures.map((to: Position) => [[row, col], to]))
-        }
+        captureMoves.push(...captures.map(to => [[row, col], to] as [Position, Position]))
       }
     }
   }
