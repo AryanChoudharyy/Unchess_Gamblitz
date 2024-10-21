@@ -1,4 +1,4 @@
-import { Board, Piece, Player, Position, PieceType, Move } from './types'
+import { Board, Player, Position, PieceType, Move } from './types'
 import { BOARD_SIZE } from './constants'
 
 export function initialBoard(): Board {
@@ -35,6 +35,7 @@ function getPieceMoves(board: Board, position: Position): Position[] {
   switch (piece.type) {
     case 'pawn':
       const direction = piece.player === 'white' ? 1 : -1
+      const startRow = piece.player === 'white' ? 1 : 6
       
       // Single step forward
       const singleStep: Position = [row + direction, col]
@@ -42,7 +43,7 @@ function getPieceMoves(board: Board, position: Position): Position[] {
         moves.push(singleStep)
         
         // Double step forward (only from starting position)
-        if ((piece.player === 'white' && row === 1) || (piece.player === 'black' && row === 6)) {
+        if (row === startRow) {
           const doubleStep: Position = [row + 2 * direction, col]
           if (!board[doubleStep[0]][doubleStep[1]]) {
             moves.push(doubleStep)
@@ -61,12 +62,7 @@ function getPieceMoves(board: Board, position: Position): Position[] {
       }
       break
     case 'rook':
-    case 'bishop':
-    case 'queen':
-      const directions = piece.type === 'rook' ? [[1, 0], [-1, 0], [0, 1], [0, -1]] :
-                         piece.type === 'bishop' ? [[1, 1], [1, -1], [-1, 1], [-1, -1]] :
-                         [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]
-      for (const [dx, dy] of directions) {
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
         let newRow = row + dx
         let newCol = col + dy
         while (isWithinBoard([newRow, newCol])) {
@@ -87,6 +83,40 @@ function getPieceMoves(board: Board, position: Position): Position[] {
         const newPos: Position = [row + dx, col + dy]
         if (isWithinBoard(newPos) && (!board[newPos[0]][newPos[1]] || board[newPos[0]][newPos[1]]!.player !== piece.player)) {
           moves.push(newPos)
+        }
+      }
+      break
+    case 'bishop':
+      for (const [dx, dy] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+        let newRow = row + dx
+        let newCol = col + dy
+        while (isWithinBoard([newRow, newCol])) {
+          if (board[newRow][newCol]) {
+            if (board[newRow][newCol]!.player !== piece.player) {
+              moves.push([newRow, newCol])
+            }
+            break
+          }
+          moves.push([newRow, newCol])
+          newRow += dx
+          newCol += dy
+        }
+      }
+      break
+    case 'queen':
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+        let newRow = row + dx
+        let newCol = col + dy
+        while (isWithinBoard([newRow, newCol])) {
+          if (board[newRow][newCol]) {
+            if (board[newRow][newCol]!.player !== piece.player) {
+              moves.push([newRow, newCol])
+            }
+            break
+          }
+          moves.push([newRow, newCol])
+          newRow += dx
+          newCol += dy
         }
       }
       break
@@ -140,7 +170,7 @@ export function makeMove(board: Board, from: Position, to: Position): { newBoard
 
   // Pawn promotion
   if (newBoard[toRow][toCol]!.type === 'pawn' && (toRow === 0 || toRow === BOARD_SIZE - 1)) {
-    newBoard[toRow][toCol] = { ...newBoard[toRow][toCol]!, type: 'king' }
+    newBoard[toRow][toCol] = { ...newBoard[toRow][toCol]!, type: 'queen' }
   }
 
   return { newBoard, lastMove: { from, to } }
@@ -165,8 +195,8 @@ export function checkWinCondition(board: Board): Player | null {
   const whitePieces = board.flat().filter(piece => piece && piece.player === 'white')
   const blackPieces = board.flat().filter(piece => piece && piece.player === 'black')
 
-  if (whitePieces.length === 0) return 'white'
-  if (blackPieces.length === 0) return 'black'
+  if (whitePieces.length === 0) return 'black'
+  if (blackPieces.length === 0) return 'white'
 
   return null
 }

@@ -45,7 +45,7 @@ const Board: React.FC = () => {
             isSelected={selectedPiece?.[0] === row && selectedPiece?.[1] === col}
             isPossibleMove={possibleMoves.some(move => move[0] === row && move[1] === col)}
             isCapturePossible={captureMoves.some(
-              ([from, to]) => from[0] === row && from[1] === col
+              ([from]) => from[0] === row && from[1] === col
             )}
             isLastMoveFrom={lastMove?.from[0] === row && lastMove?.from[1] === col}
             isLastMoveTo={lastMove?.to[0] === row && lastMove?.to[1] === col}
@@ -57,7 +57,7 @@ const Board: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="border-[15px] border-amber-700 rounded-lg overflow-hidden">
+      <div className="border-[10px] border-amber-700 rounded-lg overflow-hidden">
         {renderBoard()}
       </div>
       <button
