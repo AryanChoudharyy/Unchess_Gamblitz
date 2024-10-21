@@ -4,7 +4,7 @@ import { useGame } from '../contexts/GameContext'
 const MoveInput: React.FC = () => {
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
-  const { makeMove, currentPlayer, quitGame } = useGame()
+  const { makeMove, quitGame } = useGame()
 
   const handleMove = () => {
     const fromPosition = from.split(',').map(Number) as [number, number]
@@ -15,7 +15,7 @@ const MoveInput: React.FC = () => {
   }
 
   const handleQuit = () => {
-    quitGame(currentPlayer)
+    quitGame()
   }
 
   return (
