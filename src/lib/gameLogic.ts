@@ -151,7 +151,7 @@ export function getCaptureMoves(board: Board, player: Player): Position[][] {
         const moves = getPieceMoves(board, [row, col])
         const captures = moves.filter(([toRow, toCol]) => board[toRow][toCol] && board[toRow][toCol]!.player !== player)
         if (captures.length > 0) {
-          captureMoves.push(...captures.map(to => [[row, col], to]))
+          captureMoves.push(...captures.map((to: Position) => [[row, col], to]))
         }
       }
     }
